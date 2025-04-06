@@ -1,0 +1,216 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Total Services Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Services</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ services|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduled Services Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Scheduled Services</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ services|selectattr('status', 'equalto', 'scheduled')|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress Services Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">In Progress</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ services|selectattr('status', 'equalto', 'in_progress')|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tools fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Services Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ services|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Services Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Recent Services</h6>
+        </div>
+        <div class="card-body">
+            {% if services %}
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Service Type</th>
+                            <th>Scheduled Date</th>
+                            <th>Status</th>
+                            <th>Cost</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                        <tr>
+                            <td>{{ service.user.name }}</td>
+                            <td>{{ service.vehicle.model }} ({{ service.vehicle.license_plate }})</td>
+                            <td>{{ service.service_type }}</td>
+                            <td>{{ service.scheduled_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if service.status == 'scheduled' %}
+                                <span class="badge bg-warning text-dark">Scheduled</span>
+                                {% elif service.status == 'in_progress' %}
+                                <span class="badge bg-info text-white">In Progress</span>
+                                {% elif service.status == 'completed' %}
+                                <span class="badge bg-success text-white">Completed</span>
+                                {% elif service.status == 'cancelled' %}
+                                <span class="badge bg-danger text-white">Cancelled</span>
+                                {% else %}
+                                <span class="badge bg-secondary text-white">{{ service.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ service.cost if service.cost else 'Not set' }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#updateModal{{ service.id }}">
+                                    <i class="fas fa-edit"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Update Modal -->
+                        <div class="modal fade" id="updateModal{{ service.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ service.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="updateModalLabel{{ service.id }}">Update Service Status</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('dashboard_admin') }}">
+                                        {{ form.hidden_tag() }}
+                                        <input type="hidden" name="service_id" value="{{ service.id }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                {{ form.status.label(class="form-label") }}
+                                                {{ form.status(class="form-select") }}
+                                                {% if form.status.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {% for error in form.status.errors %}
+                                                            {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ form.actual_date.label(class="form-label") }}
+                                                {{ form.actual_date(class="form-control", type="date") }}
+                                                {% if form.actual_date.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {% for error in form.actual_date.errors %}
+                                                            {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ form.cost.label(class="form-label") }}
+                                                {{ form.cost(class="form-control") }}
+                                                {% if form.cost.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {% for error in form.cost.errors %}
+                                                            {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ form.odometer_reading.label(class="form-label") }}
+                                                {{ form.odometer_reading(class="form-control") }}
+                                                {% if form.odometer_reading.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {% for error in form.odometer_reading.errors %}
+                                                            {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ form.notes.label(class="form-label") }}
+                                                {{ form.notes(class="form-control", rows="3") }}
+                                                {% if form.notes.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {% for error in form.notes.errors %}
+                                                            {{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Update Service</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                No services found in the system.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

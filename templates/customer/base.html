@@ -1,0 +1,58 @@
+{% extends "shared/base.html" %}
+
+{% block title %}Customer Dashboard - Vehicle Service Management{% endblock %}
+
+{% block sidebar %}
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">Customer Panel</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ url_for('customer_dashboard') }}" class="nav-link {% if request.endpoint == 'customer_dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('view_vehicles') }}" class="nav-link {% if request.endpoint == 'view_vehicles' %}active{% endif %}">
+                <i class="fas fa-car me-2"></i>
+                My Vehicles
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('view_services') }}" class="nav-link {% if request.endpoint == 'view_services' %}active{% endif %}">
+                <i class="fas fa-wrench me-2"></i>
+                View Services
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('service_history') }}" class="nav-link {% if request.endpoint == 'service_history' %}active{% endif %}">
+                <i class="fas fa-history me-2"></i>
+                Service History
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('update_user_details') }}" class="nav-link {% if request.endpoint == 'update_user_details' %}active{% endif %}">
+                <i class="fas fa-user me-2"></i>
+                Update Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                <button type="submit" class="nav-link text-danger" style="background: none; border: none; width: 100%; text-align: left;">
+                    <i class="fas fa-user-times me-2"></i>
+                    Delete Account
+                </button>
+            </form>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('logout') }}" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %} 

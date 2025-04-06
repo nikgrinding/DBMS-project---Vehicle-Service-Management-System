@@ -1,0 +1,108 @@
+{% extends "customer/base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h4 class="m-0 font-weight-bold text-primary">Update Vehicle Details</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('update_vehicle', vehicle_id=vehicle.id) }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Vehicle Information -->
+                        <div class="mb-4">
+                            <h5>Current Vehicle Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Model:</strong> {{ vehicle.model }}</p>
+                                    <p><strong>Year:</strong> {{ vehicle.year }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>License Plate:</strong> {{ vehicle.license_plate }}</p>
+                                    <p><strong>Current Odometer:</strong> {{ vehicle.odo_reading }} km</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Model -->
+                        <div class="mb-3">
+                            <label for="model" class="form-label">Model</label>
+                            {{ form.model(class="form-control", placeholder="Enter vehicle model") }}
+                            {% if form.model.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.model.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Year -->
+                        <div class="mb-3">
+                            <label for="year" class="form-label">Year</label>
+                            {{ form.year(class="form-control", type="number", min="1900", max="2024", placeholder="Enter vehicle year") }}
+                            {% if form.year.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.year.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- License Plate -->
+                        <div class="mb-3">
+                            <label for="license_plate" class="form-label">License Plate</label>
+                            {{ form.license_plate(class="form-control", placeholder="Enter license plate number") }}
+                            {% if form.license_plate.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.license_plate.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Odometer Reading -->
+                        <div class="mb-3">
+                            <label for="odo_reading" class="form-label">Current Odometer Reading (km)</label>
+                            {{ form.odo_reading(class="form-control", type="number", min="0", step="1", placeholder="Enter current odometer reading") }}
+                            {% if form.odo_reading.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.odo_reading.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            {{ form.notes(class="form-control", rows="3", placeholder="Any additional information about the vehicle...") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Vehicle
+                            </button>
+                            <a href="{{ url_for('view_vehicles') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Vehicles
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

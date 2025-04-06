@@ -1,0 +1,61 @@
+{% extends "customer/base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">My Vehicles</h6>
+            <a href="{{ url_for('add_vehicle') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Add Vehicle
+            </a>
+        </div>
+        <div class="card-body">
+            {% if vehicles %}
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th>License Plate</th>
+                            <th>VIN</th>
+                            <th>Odometer Reading</th>
+                            <th>Last Service</th>
+                            <th>Next Service</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.model }}</td>
+                            <td>{{ vehicle.year }}</td>
+                            <td>{{ vehicle.license_plate }}</td>
+                            <td>{{ vehicle.vin }}</td>
+                            <td>{{ vehicle.odometer_reading }}</td>
+                            <td>{{ vehicle.last_service_date.strftime('%Y-%m-%d') if vehicle.last_service_date else 'Never' }}</td>
+                            <td>{{ vehicle.next_service_date.strftime('%Y-%m-%d') if vehicle.next_service_date else 'Not scheduled' }}</td>
+                            <td>
+                                <a href="{{ url_for('book_service', vehicle_id=vehicle.id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-wrench"></i> Book Service
+                                </a>
+                                <a href="{{ url_for('update_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i> Update
+                                </a>
+                                <a href="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                No vehicles found. <a href="{{ url_for('add_vehicle') }}">Add your first vehicle</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

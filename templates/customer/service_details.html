@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>Service Details</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{{ url_for('view_services') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Vehicle Information</h6>
+                            <p><strong>Model:</strong> {{ service.vehicle.model }}</p>
+                            <p><strong>Year:</strong> {{ service.vehicle.year }}</p>
+                            <p><strong>License Plate:</strong> {{ service.vehicle.license_plate }}</p>
+                            <p><strong>VIN:</strong> {{ service.vehicle.vin }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Service Details</h6>
+                            <p><strong>Service Type:</strong> {{ service.service_type }}</p>
+                            <p><strong>Scheduled Date:</strong> {{ service.scheduled_date.strftime('%Y-%m-%d') }}</p>
+                            {% if service.actual_date %}
+                            <p><strong>Actual Date:</strong> {{ service.actual_date.strftime('%Y-%m-%d') }}</p>
+                            {% endif %}
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-{{ 'success' if service.status == 'completed' else 'warning' if service.status == 'scheduled' else 'info' if service.status == 'in-progress' else 'danger' }}">
+                                    {{ service.status }}
+                                </span>
+                            </p>
+                            {% if service.cost %}
+                            <p><strong>Cost:</strong> ₹{{ service.cost }}</p>
+                            {% endif %}
+                            {% if service.odometer_reading %}
+                            <p><strong>Odometer Reading:</strong> {{ service.odometer_reading }} km</p>
+                            {% endif %}
+                            
+                            {% if service.status == 'completed' and service.cost %}
+                            <div class="mt-3">
+                                {% if service.payment and service.payment.status == 'completed' %}
+                                <div class="alert alert-success">
+                                    <h6>Payment Information</h6>
+                                    <p class="mb-0">
+                                        <i class="fas fa-check-circle"></i> Payment Completed
+                                        <br>
+                                        <small>Paid on {{ service.payment.payment_date.strftime('%Y-%m-%d') }} via {{ service.payment.payment_method }}</small>
+                                        <br>
+                                        <small>Transaction ID: {{ service.payment.transaction_id }}</small>
+                                    </p>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    <h6>Payment Pending</h6>
+                                    <p class="mb-0">Amount to be paid: ₹{{ service.cost }}</p>
+                                    <a href="{{ url_for('make_payment', service_id=service.id) }}" class="btn btn-primary mt-2">
+                                        <i class="fas fa-credit-card"></i> Make Payment
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('service_details', service_id=service.id) }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            {{ form.notes(class="form-control", rows="3") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Notes
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if service.history %}
+                    <div class="mt-4">
+                        <h6>Service History</h6>
+                        <div class="timeline">
+                            {% for history in service.history|sort(attribute='created_at', reverse=true) %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <p class="mb-0">
+                                        <strong>{{ history.status }}</strong> - 
+                                        <span class="local-time" data-utc="{{ history.created_at.isoformat() }}">
+                                            {{ history.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                        </span>
+                                        {% if history.notes %}
+                                        <br><small class="text-muted">{{ history.notes }}</small>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline-item {
+    position: relative;
+    padding-bottom: 15px;
+}
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #6c757d;
+}
+.timeline-content {
+    padding-left: 10px;
+}
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, starting time conversion...');
+    
+    const timeElements = document.querySelectorAll('.local-time');
+    console.log('Found', timeElements.length, 'time elements to convert');
+    
+    timeElements.forEach(function(element) {
+        const utcTime = element.getAttribute('data-utc');
+        console.log('Converting UTC time:', utcTime);
+        
+        try {
+            const localDate = new Date(utcTime);
+            console.log('Local date object:', localDate);
+            
+            if (isNaN(localDate.getTime())) {
+                console.error('Invalid date:', utcTime);
+                return;
+            }
+            
+            // Add 5 hours and 30 minutes for IST
+            localDate.setHours(localDate.getHours() + 5);
+            localDate.setMinutes(localDate.getMinutes() + 30);
+            
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            
+            const formattedTime = localDate.toLocaleString('en-US', options).replace(',', '');
+            console.log('Converted to IST:', formattedTime);
+            
+            element.textContent = formattedTime;
+        } catch (error) {
+            console.error('Error converting time:', error);
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

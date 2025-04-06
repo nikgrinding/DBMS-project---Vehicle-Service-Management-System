@@ -1,0 +1,111 @@
+{% extends "customer/base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <a href="{{ url_for('add_vehicle') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add Vehicle
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Vehicles Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                My Vehicles</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vehicles|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-car fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Services Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Upcoming Services</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ upcoming_services|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Vehicles Table -->
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">My Vehicles</h6>
+                </div>
+                <div class="card-body">
+                    {% if vehicles %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Year</th>
+                                    <th>License Plate</th>
+                                    <th>VIN</th>
+                                    <th>Odometer Reading</th>
+                                    <th>Last Service</th>
+                                    <th>Next Service</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.model }}</td>
+                                    <td>{{ vehicle.year }}</td>
+                                    <td>{{ vehicle.license_plate }}</td>
+                                    <td>{{ vehicle.vin }}</td>
+                                    <td>{{ vehicle.odometer_reading }}</td>
+                                    <td>{{ vehicle.last_service_date.strftime('%Y-%m-%d') if vehicle.last_service_date else 'Never' }}</td>
+                                    <td>{{ vehicle.next_service_date.strftime('%Y-%m-%d') if vehicle.next_service_date else 'Not scheduled' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('book_service', vehicle_id=vehicle.id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-wrench"></i> Book Service
+                                        </a>
+                                        <a href="{{ url_for('update_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-edit"></i> Update
+                                        </a>
+                                        <a href="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No vehicles found. <a href="{{ url_for('add_vehicle') }}">Add your first vehicle</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

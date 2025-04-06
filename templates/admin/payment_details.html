@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Payment Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Service Information</h5>
+                        <p><strong>Service ID:</strong> {{ service.id }}</p>
+                        <p><strong>Customer:</strong> {{ service.user.name }}</p>
+                        <p><strong>Vehicle:</strong> {{ service.vehicle.model }} ({{ service.vehicle.license_plate }})</p>
+                        <p><strong>Service Type:</strong> {{ service.service_type }}</p>
+                        <p><strong>Completed Date:</strong> {{ service.actual_date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Amount:</strong> ₹{{ service.cost }}</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Payment Information</h5>
+                        {% if service.payment %}
+                            <p><strong>Payment Status:</strong> 
+                                <span class="badge bg-success">Completed</span>
+                            </p>
+                            <p><strong>Payment Date:</strong> {{ service.payment.payment_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            <p><strong>Payment Method:</strong> {{ service.payment.payment_method }}</p>
+                            <p><strong>Transaction ID:</strong> {{ service.payment.transaction_id }}</p>
+                        {% else %}
+                            <p class="text-warning">Payment not yet received.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin_payments') }}" class="btn btn-secondary">Back to Payments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

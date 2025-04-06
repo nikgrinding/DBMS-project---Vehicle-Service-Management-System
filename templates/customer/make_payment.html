@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Make Payment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Service Details</h5>
+                        <div class="alert alert-info">
+                            <p class="mb-0">
+                                <strong>Service Type:</strong> {{ service.service_type }}<br>
+                                <strong>Vehicle:</strong> {{ service.vehicle.model }} ({{ service.vehicle.license_plate }})<br>
+                                <strong>Amount Due:</strong> ₹{{ service.cost }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.amount.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.amount(class="form-control", readonly=True) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.payment_method.label(class="form-label") }}
+                            {{ form.payment_method(class="form-select") }}
+                            {% if form.payment_method.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.payment_method.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.transaction_id.label(class="form-label") }}
+                            {{ form.transaction_id(class="form-control", placeholder="Enter transaction ID") }}
+                            {% if form.transaction_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.transaction_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('service_details', service_id=service.id) }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

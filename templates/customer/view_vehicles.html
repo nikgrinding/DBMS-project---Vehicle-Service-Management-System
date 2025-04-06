@@ -1,0 +1,111 @@
+{% extends "shared/base.html" %}
+
+{% block title %}My Vehicles - Vehicle Service Management{% endblock %}
+
+{% block sidebar %}
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">Customer Panel</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ url_for('customer_dashboard') }}" class="nav-link {% if request.endpoint == 'customer_dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('view_vehicles') }}" class="nav-link {% if request.endpoint == 'view_vehicles' %}active{% endif %}">
+                <i class="fas fa-car me-2"></i>
+                My Vehicles
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('view_services') }}" class="nav-link {% if request.endpoint == 'view_services' %}active{% endif %}">
+                <i class="fas fa-wrench me-2"></i>
+                View Services
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('service_history') }}" class="nav-link {% if request.endpoint == 'service_history' %}active{% endif %}">
+                <i class="fas fa-history me-2"></i>
+                Service History
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('update_user_details') }}" class="nav-link {% if request.endpoint == 'update_user_details' %}active{% endif %}">
+                <i class="fas fa-user me-2"></i>
+                Update Profile
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">My Vehicles</h1>
+        <a href="{{ url_for('add_vehicle') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add Vehicle
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Vehicle List</h6>
+                </div>
+                <div class="card-body">
+                    {% if vehicles %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Year</th>
+                                    <th>License Plate</th>
+                                    <th>VIN</th>
+                                    <th>Odometer Reading</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.model }}</td>
+                                    <td>{{ vehicle.year }}</td>
+                                    <td>{{ vehicle.license_plate }}</td>
+                                    <td>{{ vehicle.vin }}</td>
+                                    <td>{{ vehicle.odo_reading }}</td>
+                                    <td>
+                                        <a href="{{ url_for('book_service', vehicle_id=vehicle.id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-wrench"></i> Book Service
+                                        </a>
+                                        <a href="{{ url_for('update_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-edit"></i> Update
+                                        </a>
+                                        <a href="{{ url_for('delete_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No vehicles found. <a href="{{ url_for('add_vehicle') }}">Add your first vehicle</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Service Details - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>Service Details</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{{ url_for('view_services') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">Service Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Customer Information</h6>
+                            <p><strong>Name:</strong> {{ service.user.name }}</p>
+                            <p><strong>Email:</strong> {{ service.user.email }}</p>
+                            <p><strong>Phone:</strong> {{ service.user.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Vehicle Information</h6>
+                            <p><strong>Model:</strong> {{ service.vehicle.model }}</p>
+                            <p><strong>Year:</strong> {{ service.vehicle.year }}</p>
+                            <p><strong>License Plate:</strong> {{ service.vehicle.license_plate }}</p>
+                            <p><strong>VIN:</strong> {{ service.vehicle.vin }}</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('service_details', service_id=service.id) }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.status.label(class="form-label") }}
+                                    {{ form.status(class="form-select") }}
+                                    {% if form.status.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.status.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.scheduled_date.label(class="form-label") }}
+                                    {{ form.scheduled_date(class="form-control", type="date") }}
+                                    {% if form.scheduled_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.scheduled_date.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.actual_date.label(class="form-label") }}
+                                    {{ form.actual_date(class="form-control", type="date") }}
+                                    {% if form.actual_date.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.actual_date.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.cost.label(class="form-label") }}
+                                    {{ form.cost(class="form-control", type="number", step="0.01") }}
+                                    {% if form.cost.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.cost.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.notes.label(class="form-label") }}
+                            {{ form.notes(class="form-control", rows="4") }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if service.status == 'completed' and service.cost %}
+                    <div class="mt-4">
+                        <h5>Payment Information</h5>
+                        {% if service.payment and service.payment.status == 'completed' %}
+                            <p><strong>Payment Status:</strong> 
+                                <span class="badge bg-success">Paid</span>
+                            </p>
+                            <p><strong>Payment Date:</strong> {{ service.payment.payment_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            <p><strong>Payment Method:</strong> {{ service.payment.payment_method }}</p>
+                            <p><strong>Transaction ID:</strong> {{ service.payment.transaction_id }}</p>
+                        {% else %}
+                            <p class="text-warning">Payment pending</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{{ url_for('view_services') }}" class="btn btn-secondary">Back to Services</a>
+                        {% if service.status == 'completed' and service.cost %}
+                            <a href="{{ url_for('admin_payment_details', service_id=service.id) }}" class="btn btn-info">
+                                View Payment Details
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,100 @@
+{% extends "customer/base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">My Vehicles</h1>
+        <a href="{{ url_for('add_vehicle') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add Vehicle
+        </a>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h4 class="m-0 font-weight-bold text-primary">Add New Vehicle</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_vehicle') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Model -->
+                        <div class="mb-3">
+                            {{ form.model.label(class="form-label") }}
+                            {{ form.model(class="form-control") }}
+                            {% if form.model.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.model.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Year -->
+                        <div class="mb-3">
+                            {{ form.year.label(class="form-label") }}
+                            {{ form.year(class="form-control", type="number", min="1900", max="2024") }}
+                            {% if form.year.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.year.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- License Plate -->
+                        <div class="mb-3">
+                            {{ form.license_plate.label(class="form-label") }}
+                            {{ form.license_plate(class="form-control") }}
+                            {% if form.license_plate.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.license_plate.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- VIN -->
+                        <div class="mb-3">
+                            {{ form.vin.label(class="form-label") }}
+                            {{ form.vin(class="form-control") }}
+                            {% if form.vin.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.vin.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Odometer Reading -->
+                        <div class="mb-3">
+                            {{ form.odo_reading.label(class="form-label") }}
+                            {{ form.odo_reading(class="form-control", type="number", min="0") }}
+                            {% if form.odo_reading.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.odo_reading.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Vehicle
+                            </button>
+                            <a href="{{ url_for('view_vehicles') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Vehicles
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

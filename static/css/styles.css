@@ -1,0 +1,11 @@
+body {
+    font-family: Arial, sans-serif;
+}
+h1 {
+    color: #007bff;
+}
+a {
+    margin-right: 15px;
+    color: #007bff;
+    text-decoration: none;
+}
