@@ -2,7 +2,7 @@ from flask import Flask
 from models import db
 from routes import app
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Nandu%40123@127.0.0.1:3306/vehicle_management'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Nik123%40chennai@127.0.0.1:3306/vehicle_management'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY']= 'thisisasecretkey'
 
